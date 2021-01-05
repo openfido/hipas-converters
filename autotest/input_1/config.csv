@@ -1,0 +1,4 @@
+INPUTFILE,test.csv
+OUTPUTFILE,test.glm
+FROMTYPE,config
+TOTYPE,config
