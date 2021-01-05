@@ -142,9 +142,11 @@ else
 	INSTALL="false"
 fi
 for TOOL in $(cat "install.txt");  do
-	if [ -z "$(which ${TOOL})" ]; then
+	NAME=$(echo $TOOL | cut -f1 -d:)
+	CODE=$(echo $TOOL | cut -f2 -d:)
+	if [ -z "$(which ${NAME})" ]; then
 		echo "Installing ${TOOL}"
-		${INSTALL} ${TOOL} 1>/dev/stderr || error E_INSTALL "unable to install tool '${TOOL}' specified in 'install.txt'"
+		${INSTALL} ${CODE} 1>/dev/stderr || error E_INSTALL "unable to install tool '${TOOL}' specified in 'install.txt'"
 	fi
 done
 
