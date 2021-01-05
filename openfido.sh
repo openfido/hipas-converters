@@ -123,11 +123,14 @@ default OPTIONS ""
 
 # install required tools
 if [ ! -z "$(which brew)" ]; then
-	INSTALL="brew install -yq"
+	INSTALL="brew install -q"
+	brew update -yq 1>/dev/null 2>/dev/null || error 2 "unable to update brew"
 elif [ ! -z "$(which apt)" ]; then
 	INSTALL="apt install -yqq"
+	apt update -yq 1>/dev/null 2>/dev/null || error 2 "unable to update apt"
 elif [ ! -z "(which yum)" ]; then
 	INSTALL="yum install -yqq"
+	yum update -yq 1>/dev/null 2>/dev/null || error 2 "unable to update yum"
 else
 	INSTALL="false"
 fi
