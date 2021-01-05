@@ -13,4 +13,4 @@ This repository contains the OpenFIDO code needed to use the HiPAS converters.  
 # See also
 
 * [Online docs](http://docs.gridlabd.us/index.html?owner=openfido&project=hipas-converters&branch=master&folder=&doc=/README.md)
-* [HiPAS Converters](http://docs.gridlabd.us/index.html?owner=slacgismo&project=hipas-converters&branch=master&folder=&doc=/README.md)
+* [HiPAS Converters](http://docs.gridlabd.us/index.html?owner=slacgismo&project=gridlabd-converters&branch=master&folder=&doc=/README.md)
