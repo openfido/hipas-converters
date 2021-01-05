@@ -31,7 +31,7 @@ DEFAULT_SOURCE="https://raw.githubusercontent.com/slacgismo/gridlabd"
 DEFAULT_BRANCH="master"
 DEFAULT_SRCPATH="gldcore/converters"
 
-# error handling
+# error $handling
 EXECNAME=$0
 TMP=/tmp/openfido-$$
 OLDWD=${PWD}
@@ -64,10 +64,9 @@ E_DOWNLOAD=5
 E_CONVERT=6
 error()
 {
-	EC="${1:-E_INVALID}"
-	XC="$(printenv $EC)"
+	XC=$1
 	shift 1
-	echo "*** ERROR ($EC $XC) ***" 
+	echo "*** ERROR $XC ***" 
 	echo "  $* " 
 	exit $XC
 }
@@ -78,7 +77,7 @@ warning()
 require()
 {
 	for VAR in $*; do
-		test ! -z "$(printenv ${VAR})" || error E_REQUIRED "Required value for ${VAR} not specified in ${CONFIG}"
+		test ! -z "$(printenv ${VAR})" || error $E_REQUIRED "Required value for ${VAR} not specified in ${CONFIG}"
 	done
 }
 default()
@@ -90,7 +89,7 @@ default()
 	fi
 }
 
-# nounset: undefined variable outputs error message, and forces an exit
+# nounset: undefined variable outputs error $message, and forces an exit
 set -u
 
 # errexit: abort script at first error
@@ -111,7 +110,7 @@ echo "Starting $0 at $(date) in ${SRCDIR}"
 
 # check and load startup environment
 if [ ! -f "${CONFIG}" ]; then
-	error E_NOTFOUND "Required file '${CONFIG}' not found"
+	error $E_NOTFOUND "Required file '${CONFIG}' not found"
 fi
 export INPUTFILE=$(grep ^INPUTFILE, "${CONFIG}" | cut -f2 -d,)
 export OUTPUTFILE=$(grep ^OUTPUTFILE, "${CONFIG}" | cut -f2 -d,)
@@ -131,13 +130,13 @@ default OPTIONS ""
 # install required tools
 if [ ! -z "$(which brew)" ]; then
 	INSTALL="brew install -q"
-	brew update -y 1>/dev/stderr || error E_INSTALL "unable to update brew"
+	brew update 1>/dev/stderr || error $E_INSTALL "unable to update brew"
 elif [ ! -z "$(which apt)" ]; then
 	INSTALL="apt install -yqq"
-	apt update -y 1>/dev/stderr || error E_INSTALL "unable to update apt"
+	apt update -y 1>/dev/stderr || error $E_INSTALL "unable to update apt"
 elif [ ! -z "(which yum)" ]; then
 	INSTALL="yum install -yqq"
-	yum update -y 1>/dev/stderr || error E_INSTALL "unable to update yum"
+	yum update -y 1>/dev/stderr || error $E_INSTALL "unable to update yum"
 else
 	INSTALL="false"
 fi
@@ -146,7 +145,7 @@ for TOOL in $(cat "install.txt");  do
 	CODE=$(echo $TOOL | cut -f2 -d:)
 	if [ -z "$(which ${NAME})" ]; then
 		echo "Installing ${TOOL}"
-		${INSTALL} ${CODE} 1>/dev/stderr || error E_INSTALL "unable to install tool '${TOOL}' specified in 'install.txt'"
+		${INSTALL} ${CODE} 1>/dev/stderr || error $E_INSTALL "unable to install tool '${TOOL}' specified in 'install.txt'"
 	fi
 done
 
@@ -172,21 +171,21 @@ echo "  OPTIONS = ${OPTIONS}"
 
 # requirements
 if [ -f "${OPENFIDO_INPUT}/requirements.txt" ]; then
-	$(which python3) -m pip install -r "${OPENFIDO_INPUT}/requirements.txt" || error E_INSTALL "unable to satisfy user 'requirements.txt'"
+	$(which python3) -m pip install -r "${OPENFIDO_INPUT}/requirements.txt" || error $E_INSTALL "unable to satisfy user 'requirements.txt'"
 fi
 if [ -f "requirements.txt" ]; then
-	$(which python3) -m pip install -r "requirements.txt" || error E_INSTALL "unable to satisfy system 'requirements.txt'"
+	$(which python3) -m pip install -r "requirements.txt" || error $E_INSTALL "unable to satisfy system 'requirements.txt'"
 fi
 if [ ! -f "${OPENFIDO_INPUT}/${INPUTFILE}" ]; then
-	error 4 "file '${INPUTFILE}' is not found"
+	error $4 "file '${INPUTFILE}' is not found"
 fi
 FROMEXT=${INPUTFILE##*.}
 if [ -z "$FROMEXT" ]; then
-	error 4 "file '${INPUTFILE}' does not have a recognizable extension"
+	error $4 "file '${INPUTFILE}' does not have a recognizable extension"
 fi
 TOEXT=${OUTPUTFILE##*.}
 if [ -z "$TOEXT" ]; then
-	error 4 "file '${OUTPUTFILE}' does not have a recognizable extension"
+	error $4 "file '${OUTPUTFILE}' does not have a recognizable extension"
 fi
 
 # show input files
@@ -196,16 +195,16 @@ ls -l ${OPENFIDO_INPUT} | sed '1,$s/^/  /'
 # download type converter
 CONVERTER="${FROMEXT}-${FROMTYPE}2${TOEXT}-${TOTYPE}.py"
 DOWNLOAD="${SOURCE}/${BRANCH}/${SRCPATH}/${CONVERTER}"
-curl -sSL "${DOWNLOAD}" > "${CONVERTER}" || error E_DOWNLOAD "converter '${CONVERTER}' not found at '${DOWNLOAD}'"
+curl -sSL "${DOWNLOAD}" > "${CONVERTER}" || error $E_DOWNLOAD "converter '${CONVERTER}' not found at '${DOWNLOAD}'"
 
 # download main converter
 CONVERTER="${FROMEXT}2${TOEXT}.py"
 DOWNLOAD="${SOURCE}/${BRANCH}/${SRCPATH}/${CONVERTER}"
-curl -sSL "${DOWNLOAD}" > "${CONVERTER}" || error E_DOWNLOAD "converter '${CONVERTER}' not found at '${DOWNLOAD}'"
+curl -sSL "${DOWNLOAD}" > "${CONVERTER}" || error $E_DOWNLOAD "converter '${CONVERTER}' not found at '${DOWNLOAD}'"
 
 # run the main converter
 COMMAND="$(which python3) $CONVERTER -i ${OPENFIDO_INPUT}/${INPUTFILE} -o ${OPENFIDO_OUTPUT}/${OUTPUTFILE} -f ${FROMTYPE} -t ${TOTYPE} ${OPTIONS}"
-${COMMAND} || error E_CONVERT "${CONVERTER} failed"
+${COMMAND} || error $E_CONVERT "${CONVERTER} failed"
 
 # show input files
 echo "Output files:"
