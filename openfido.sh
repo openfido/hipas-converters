@@ -22,16 +22,28 @@
 #     ...
 #     OPTION,<nameN>=<valueN> --> (optional) last option to pass to converter
 #
-# Exit codes
-#   1 - invalid starting environment
-
 VERSION=0
 
+#
+# Exit codes
+#
+E_INTERNAL=1 # internal error
+E_NOTFOUND=2 # file not found
+E_REQUIRED=3 # requirement not satisfied
+E_INSTALL=4 # install failure
+E_DOWNLOAD=5 # download failure
+E_CONVERT=6 # conversion failure
+
+#
+# Defaults
+#
 DEFAULT_SOURCE="https://raw.githubusercontent.com/slacgismo/gridlabd"
 DEFAULT_BRANCH="master"
 DEFAULT_SRCPATH="gldcore/converters"
 
-# error $handling
+#
+# Error handling
+#
 EXECNAME=$0
 TMP=/tmp/openfido-$$
 OLDWD=${PWD}
@@ -56,12 +68,6 @@ onexit()
 	fi
 	exit $3
 }
-E_INTERNAL=1
-E_NOTFOUND=2
-E_REQUIRED=3
-E_INSTALL=4
-E_DOWNLOAD=5
-E_CONVERT=6
 error()
 {
 	XC=$1
