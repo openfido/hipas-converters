@@ -183,15 +183,15 @@ if [ -f "requirements.txt" ]; then
 	$(which python3) -m pip install -r "requirements.txt" || error $E_INSTALL "unable to satisfy system 'requirements.txt'"
 fi
 if [ ! -f "${OPENFIDO_INPUT}/${INPUTFILE}" ]; then
-	error $4 "file '${INPUTFILE}' is not found"
+	error $E_NOTFOUND "file '${INPUTFILE}' is not found"
 fi
 FROMEXT=${INPUTFILE##*.}
 if [ -z "$FROMEXT" ]; then
-	error $4 "file '${INPUTFILE}' does not have a recognizable extension"
+	error $E_NOTFOUND "file '${INPUTFILE}' does not have a recognizable extension"
 fi
 TOEXT=${OUTPUTFILE##*.}
 if [ -z "$TOEXT" ]; then
-	error $4 "file '${OUTPUTFILE}' does not have a recognizable extension"
+	error $E_NOTFOUND "file '${OUTPUTFILE}' does not have a recognizable extension"
 fi
 
 # show input files
