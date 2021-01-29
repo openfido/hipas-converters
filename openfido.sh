@@ -124,10 +124,12 @@ export FROMTYPE=$(grep ^FROMTYPE, "${CONFIG}" | cut -f2 -d,)
 export TOTYPE=$(grep ^TOTYPE, "${CONFIG}" | cut -f2 -d,)
 export SOURCE=$(grep ^SOURCE, "${CONFIG}" | cut -f2 -d, | tr '\n' ' ')
 export BRANCH=$(grep ^BRANCH, "${CONFIG}" | cut -f2 -d,)
-export SRCPATH=$(grep ^BRANCH, "${CONFIG}" | cut -f2 -d)
+export SRCPATH=$(grep ^BRANCH, "${CONFIG}" | cut -f2 -d,)
 export OPTIONS=$(grep ^OPTION, "${CONFIG}" | cut -f2 -d,)
 
-require INPUTFILE OUTPUTFILE FROMTYPE TOTYPE
+require INPUTFILE OUTPUTFILE 
+default FROMTYPE ""
+default TOTYPE ""
 default SOURCE "${DEFAULT_SOURCE}"
 default BRANCH "${DEFAULT_BRANCH}"
 default SRCPATH "${DEFAULT_SRCPATH}"
@@ -209,7 +211,13 @@ DOWNLOAD="${SOURCE}/${BRANCH}/${SRCPATH}/${CONVERTER}"
 curl -sSL "${DOWNLOAD}" > "${CONVERTER}" || error $E_DOWNLOAD "converter '${CONVERTER}' not found at '${DOWNLOAD}'"
 
 # run the main converter
-COMMAND="$(which python3) $CONVERTER -i ${OPENFIDO_INPUT}/${INPUTFILE} -o ${OPENFIDO_OUTPUT}/${OUTPUTFILE} -f ${FROMTYPE} -t ${TOTYPE} ${OPTIONS}"
+if [ ! -z "${FROMTYPE}" ]; then
+	OPTIONS+=" -f ${FROMTYPE}"
+fi
+if [ ! -z "${TOTYPE}" ]; then
+	OPTIONS+=" -t ${TOTYPE}"
+fi
+COMMAND="$(which python3) $CONVERTER -i ${OPENFIDO_INPUT}/${INPUTFILE} -o ${OPENFIDO_OUTPUT}/${OUTPUTFILE} ${OPTIONS}"
 ${COMMAND} || error $E_CONVERT "${CONVERTER} failed"
 
 # show input files
